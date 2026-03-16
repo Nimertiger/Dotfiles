@@ -1,28 +1,25 @@
-vim.g.mapleader = ' '
-
+-- my package manager is lazy vim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+if not vim.loop.fs_stat(lazypath) then
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable", -- latest stable release
+		lazypath,
+	})
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup("nimer.plugins")
+-- plugins and options varaible,plugins moved to lua/plugins.lua and vim-options
+vim.keymap.set('n', '<F5>', function()
+  vim.cmd("write") -- Save the file first
+  local file_path = vim.fn.expand('%:p')
+  local output_path = vim.fn.expand('%:p:r')
+  -- Open a terminal and run the command
+  vim.cmd(string.format("split | term g++ %s -o %s && %s", file_path, output_path, output_path))
+end, { desc = "Compile and Run C++" })
 
-
--- basic vim text edition configs 
-vim.opt.clipboard = 'unnamedplus'       -- Use system clipboard
-vim.opt.number = true                   -- Show line numbers
-vim.opt.relativenumber = true           -- Relative numbers for movement
-vim.opt.expandtab = true                -- Convert tabs to spaces
-vim.opt.shiftwidth = 2                  -- Indentation width
-vim.opt.tabstop = 2                     -- Number of spaces a tab counts for
-
-
-
+require("vim-options")
+require("lazy").setup("plugins") -- sets up lazy using plugins in lua/plugins.lua
